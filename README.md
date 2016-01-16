@@ -58,3 +58,5 @@ person merge "This isn't an update!"
 //   Check the field types match up,
 //   or manually create a Merge instance for these types.
 ~~~
+
+[license]: http://www.apache.org/licenses/LICENSE-2.0
