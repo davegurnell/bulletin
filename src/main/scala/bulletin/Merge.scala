@@ -26,31 +26,44 @@ private[bulletin] trait MergeImplicits {
   self: MergeConstructors =>
 
   /** Merge two non-empty HLists. */
-  implicit def hconsMerge[HeadA, HeadB, TailA <: HList, TailB <: HList](
+  implicit def listMerge[Name <: Symbol, HeadA, TailA <: HList, HeadB, TailB <: HList](
     implicit
+    witness: Witness.Aux[Name],
     evidence: HeadB <:< Option[HeadA],
-    tailMerge: Lazy[Merge[TailA, TailB]]
-  ): Merge[HeadA :: TailA, HeadB :: TailB] =
-    create[HeadA :: TailA, HeadB :: TailB] { (a, b) =>
-      val head: HeadA = b.head getOrElse a.head
-      val tail: TailA = tailMerge.value(a.tail, b.tail)
+    tailMerge: Merge[TailA, TailB]
+  ): Merge[FieldType[Name, HeadA] :: TailA, FieldType[Name, HeadB] :: TailB] =
+    create[FieldType[Name, HeadA] :: TailA, FieldType[Name, HeadB] :: TailB] { (a, b) =>
+      val head: FieldType[Name, HeadA] = field[Name](b.head getOrElse a.head)
+      val tail: TailA = tailMerge(a.tail, b.tail)
+      head :: tail
+    }
+
+  /** Merge two non-empty HLists. */
+  implicit def skipMerge[Name <: Symbol, HeadA, TailA <: HList, ListB <: HList](
+    implicit
+    witness: Witness.Aux[Name],
+    tailMerge: Merge[TailA, ListB]
+  ): Merge[FieldType[Name, HeadA] :: TailA, ListB] =
+    create[FieldType[Name, HeadA] :: TailA, ListB] { (a, b) =>
+      val head: FieldType[Name, HeadA] = a.head
+      val tail: TailA = tailMerge(a.tail, b)
       head :: tail
     }
 
   /** Merge two empty HLists. */
-  implicit val hnilMerge: Merge[HNil, HNil] =
+  implicit val nilMerge: Merge[HNil, HNil] =
     create[HNil, HNil] { (a, b) =>
       HNil
     }
 
   /** Merge two generic ADTs. */
-  implicit def genericMerge[A, HListA, B, HListB](
+  implicit def genericMerge[A, HListA <: HList, B, HListB <: HList](
     implicit
-    genA: Generic.Aux[A, HListA],
-    genB: Generic.Aux[B, HListB],
-    merge: Lazy[Merge[HListA, HListB]]
+    genA: LabelledGeneric.Aux[A, HListA],
+    genB: LabelledGeneric.Aux[B, HListB],
+    merge: Merge[HListA, HListB]
   ): Merge[A, B] =
     create[A, B] { (a, b) =>
-      genA.from(merge.value(genA.to(a), genB.to(b)))
+      genA.from(merge(genA.to(a), genB.to(b)))
     }
 }

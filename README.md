@@ -28,7 +28,6 @@ case class Person(
   email: Option[String])
 
 case class Update(
-  id: Option[Long],
   name: Option[String],
   email: Option[Option[String]])
 ~~~
@@ -37,7 +36,7 @@ Create instances of those classes:
 
 ~~~ scala
 val person = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
-val update = Update(None, Some("Batman"), Some(None))
+val update = Update(Some("Batman"), Some(None))
 ~~~
 
 And merge them!
@@ -58,3 +57,8 @@ person merge "This isn't an update!"
 //   Check the field types match up,
 //   or manually create a Merge instance for these types.
 ~~~
+
+Fields are matched by name and type,
+and must be specified in the same order in both types.
+
+[license]: http://www.apache.org/licenses/LICENSE-2.0
