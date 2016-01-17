@@ -5,7 +5,6 @@ import shapeless.test.illTyped
 
 class MergeSpec extends FreeSpec with Matchers {
   case class Person(id: Long, name: String, email: Option[String])
-
   case class Update(id: Option[Long], name: Option[String], email: Option[Option[String]])
 
   "updates are applied correctly" in {
