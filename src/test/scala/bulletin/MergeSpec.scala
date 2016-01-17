@@ -38,15 +38,24 @@ class MergeSpec extends FreeSpec with Matchers {
     actual should equal(expected)
   }
 
+  "fields are aligned by type" in {
+    case class Update2(name: Option[String], email: Option[Option[String]])
+
+    val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
+    val update   = Update2(Some("Batman"), Some(None))
+
+    val actual   = person merge update
+    val expected = Person(123L, "Batman", None)
+
+    actual should equal(expected)
+  }
+
   "incompatible datatypes cause a compile error" in {
     case class Update2(id: Option[Int], name: Option[String], email: Option[Option[String]])
-    case class Update3(name: Option[String], email: Option[Option[String]])
 
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
     val update2  = Update2(Some(321), Some("Batman"), Some(None))
-    val update3  = Update3(Some("Batman"), Some(None))
 
     illTyped("""person merge update2""")
-    illTyped("""person merge update3""")
   }
 }

@@ -26,7 +26,7 @@ private[bulletin] trait MergeImplicits {
   self: MergeConstructors =>
 
   /** Merge two non-empty HLists. */
-  implicit def hconsMerge[HeadA, HeadB, TailA <: HList, TailB <: HList](
+  implicit def listMerge[HeadA, TailA <: HList, HeadB, TailB <: HList](
     implicit
     evidence: HeadB <:< Option[HeadA],
     tailMerge: Lazy[Merge[TailA, TailB]]
@@ -37,20 +37,31 @@ private[bulletin] trait MergeImplicits {
       head :: tail
     }
 
+  /** Merge two non-empty HLists. */
+  implicit def skipMerge[HeadA, TailA <: HList, ListB <: HList](
+    implicit
+    tailMerge: Lazy[Merge[TailA, ListB]]
+  ): Merge[HeadA :: TailA, ListB] =
+    create[HeadA :: TailA, ListB] { (a, b) =>
+      val head: HeadA = a.head
+      val tail: TailA = tailMerge.value(a.tail, b)
+      head :: tail
+    }
+
   /** Merge two empty HLists. */
-  implicit val hnilMerge: Merge[HNil, HNil] =
+  implicit val nilMerge: Merge[HNil, HNil] =
     create[HNil, HNil] { (a, b) =>
       HNil
     }
 
   /** Merge two generic ADTs. */
-  implicit def genericMerge[A, HListA, B, HListB](
+  implicit def genericMerge[A, HListA <: HList, B, HListB <: HList](
     implicit
     genA: Generic.Aux[A, HListA],
     genB: Generic.Aux[B, HListB],
-    merge: Lazy[Merge[HListA, HListB]]
+    merge: Merge[HListA, HListB]
   ): Merge[A, B] =
     create[A, B] { (a, b) =>
-      genA.from(merge.value(genA.to(a), genB.to(b)))
+      genA.from(merge(genA.to(a), genB.to(b)))
     }
 }
