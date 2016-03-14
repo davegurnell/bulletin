@@ -26,7 +26,20 @@ private[bulletin] trait MergeImplicits {
   self: MergeConstructors =>
 
   /** Merge two non-empty HLists. */
-  implicit def listMerge[Name <: Symbol, HeadA, TailA <: HList, HeadB, TailB <: HList](
+  implicit def requiredMerge[Name <: Symbol, HeadA, TailA <: HList, HeadB, TailB <: HList](
+    implicit
+    witness: Witness.Aux[Name],
+    evidence: HeadB =:= HeadA,
+    tailMerge: Merge[TailA, TailB]
+  ): Merge[FieldType[Name, HeadA] :: TailA, FieldType[Name, HeadB] :: TailB] =
+    create[FieldType[Name, HeadA] :: TailA, FieldType[Name, HeadB] :: TailB] { (a, b) =>
+      val head: FieldType[Name, HeadA] = field[Name](b.head)
+      val tail: TailA = tailMerge(a.tail, b.tail)
+      head :: tail
+    }
+
+  /** Merge two non-empty HLists. */
+  implicit def optionalMerge[Name <: Symbol, HeadA, TailA <: HList, HeadB, TailB <: HList](
     implicit
     witness: Witness.Aux[Name],
     evidence: HeadB <:< Option[HeadA],

@@ -1,6 +1,6 @@
-name           := "bulletin"
-organization   := "com.davegurnell"
-version        := "0.2.0"
+name         in ThisBuild := "bulletin"
+organization in ThisBuild := "com.davegurnell"
+version      in ThisBuild := "0.3.0"
 
 // Compiler / depencencies
 
