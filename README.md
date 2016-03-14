@@ -16,7 +16,7 @@ scalaVersion := "2.11.7"
 
 resolvers += "Awesome Utilities" at "https://dl.bintray.com/davegurnell/maven"
 
-libraryDependencies += "com.davegurnell" %% "bulletin" % "0.2.0"
+libraryDependencies += "com.davegurnell" %% "bulletin" % "<<VERSION>>"
 ~~~
 
 Create two case classes representing a data structure and an update:
@@ -49,8 +49,15 @@ val updated = person merge update
 ~~~
 
 No update function is required.
+
 Bulletin matches fields in `Update` to fields in `Person` by name and type.
 The only restriction is that the fields have to be defined in the same order.
+
+If a field in the update has the same type as a field in the original,
+it always overwrites the original.
+
+If a field in the update is an `Option` of a field in the original,
+it overwrites the original iff it is set to `Some`.
 
 If you try to merge a data structure that doesn't conform to the correct patterns,
 you'll get a compile error:

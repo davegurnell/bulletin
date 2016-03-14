@@ -5,11 +5,12 @@ import shapeless.test.illTyped
 
 class MergeSpec extends FreeSpec with Matchers {
   case class Person(id: Long, name: String, email: Option[String])
-  case class Update(id: Option[Long], name: Option[String], email: Option[Option[String]])
+  case class RequiredUpdate(id: Long, name: Option[String], email: Option[String])
+  case class OptionalUpdate(id: Option[Long], name: Option[String], email: Option[Option[String]])
 
   "updates are applied correctly" in {
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
-    val update   = Update(Some(321L), Some("Batman"), Some(Some("iam@thebatman.com")))
+    val update   = OptionalUpdate(Some(321L), Some("Batman"), Some(Some("iam@thebatman.com")))
 
     val actual   = person merge update
     val expected = Person(321L, "Batman", Some("iam@thebatman.com"))
@@ -19,7 +20,7 @@ class MergeSpec extends FreeSpec with Matchers {
 
   "noop updates cause no changes" in {
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
-    val update   = Update(None, None, None)
+    val update   = OptionalUpdate(None, None, None)
 
     val actual   = person merge update
     val expected = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
@@ -27,9 +28,19 @@ class MergeSpec extends FreeSpec with Matchers {
     actual should equal(expected)
   }
 
+  "required fields are permitted" in {
+    val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
+    val update   = RequiredUpdate(321L, Some("Batman"), None)
+
+    val actual   = person merge update
+    val expected = Person(321L, "Batman", None)
+
+    actual should equal(expected)
+  }
+
   "optional fields can be set to none" in {
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
-    val update   = Update(Some(321L), Some("Batman"), Some(None))
+    val update   = OptionalUpdate(Some(321L), Some("Batman"), Some(None))
 
     val actual   = person merge update
     val expected = Person(321L, "Batman", None)
@@ -38,10 +49,10 @@ class MergeSpec extends FreeSpec with Matchers {
   }
 
   "fields are aligned by type" in {
-    case class Update2(name: Option[String], email: Option[Option[String]])
+    case class InvalidUpdate(name: Option[String], email: Option[Option[String]])
 
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
-    val update   = Update2(Some("Batman"), Some(None))
+    val update   = InvalidUpdate(Some("Batman"), Some(None))
 
     val actual   = person merge update
     val expected = Person(123L, "Batman", None)
@@ -50,10 +61,10 @@ class MergeSpec extends FreeSpec with Matchers {
   }
 
   "incompatible datatypes cause a compile error" in {
-    case class Update2(id: Option[Int], name: Option[String], email: Option[Option[String]])
+    case class InvalidUpdate(id: Option[Int], name: Option[String], email: Option[Option[String]])
 
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
-    val update2  = Update2(Some(321), Some("Batman"), Some(None))
+    val update2  = InvalidUpdate(Some(321), Some("Batman"), Some(None))
 
     illTyped("""person merge update2""")
   }
