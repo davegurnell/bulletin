@@ -7,7 +7,8 @@ class MergeSpec extends FreeSpec with Matchers {
   case class Person(id: Long, name: String, email: Option[String])
   case class RequiredUpdate(id: Long, name: Option[String], email: Option[String])
   case class OptionalUpdate(id: Option[Long], name: Option[String], email: Option[Option[String]])
-  case class CustomUpdate(id: Double)
+  case class CustomRequiredUpdate(id: Double)
+  case class CustomOptionalUpdate(id: Option[Double])
 
   "updates are applied correctly" in {
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
@@ -77,12 +78,14 @@ class MergeSpec extends FreeSpec with Matchers {
       }
 
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
-    val update   = CustomUpdate(0.321)
+    val update1  = CustomRequiredUpdate(0.321)
+    val update2  = CustomOptionalUpdate(Some(0.321))
 
-    val actual   = person merge update
+    val actual1  = person merge update1
+    val actual2  = person merge update2
     val expected = Person(321L, "Bruce Wayne", Some("bruce@waynemanor.com"))
 
-    actual should equal(expected)
+    actual1 should equal(expected)
+    actual2 should equal(expected)
   }
-
 }
