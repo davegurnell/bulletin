@@ -1,12 +1,10 @@
 package bulletin
 
+import scala.annotation.implicitNotFound
 import shapeless._
 import shapeless.labelled._
 
-@implicitNotFound("""
-  |Cannot generate an AutoMerge instance for ${A} and ${B}.
-  |Check the field types match up, and manually create Merge instances for any non-standard pairs of types.
-""".trim.stripMargin)
+@implicitNotFound("Cannot generate an AutoMerge instance for ${A} and ${B}. Check the field types match up, and manually create Merge instances for any non-standard pairs of types.")
 sealed trait AutoMerge[A, B] {
   def apply(original: A, update: B): A
 }

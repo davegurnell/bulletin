@@ -1,10 +1,9 @@
 package bulletin
 
+import scala.annotation.implicitNotFound
 import shapeless._
 
-@implicitNotFound("""
-  |Cannot merge a field of type ${A} with an update of type ${B}.
-""".trim.stripMargin)
+@implicitNotFound("Cannot merge a field of type ${A} with an update of type ${B}.")
 trait Merge[A, B] {
   def apply(original: A, update: B): A
 }
