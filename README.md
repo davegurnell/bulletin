@@ -14,7 +14,7 @@ Grab the code from Bintray by adding the following to your `build.sbt`:
 ~~~ scala
 scalaVersion := "2.11.7"
 
-resolvers += "Awesome Utilities" at "https://dl.bintray.com/davegurnell/maven"
+resolvers += Resolvers.bintrayRepo("davegurnell", "maven")
 
 libraryDependencies += "com.davegurnell" %% "bulletin" % "<<VERSION>>"
 ~~~
