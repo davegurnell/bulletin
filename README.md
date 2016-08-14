@@ -6,6 +6,7 @@ Treat your data structures to the latest updates!
 Copyright 2016 Dave Gurnell. Licensed [Apache 2][license].
 
 [![Build Status](https://travis-ci.org/davegurnell/bulletin.svg?branch=develop)](https://travis-ci.org/davegurnell/bulletin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.davegurnell/bulletin_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.davegurnell/bulletin_2.11)
 
 ## Getting Started
 
