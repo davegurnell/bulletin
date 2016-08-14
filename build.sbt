@@ -12,8 +12,6 @@ libraryDependencies ++= Seq(
 
 licenses += ("Apache-2.0", url("http://apache.org/licenses/LICENSE-2.0"))
 
-sonatypeProfileName := "com.davegurnell"
-
 pomExtra in Global := {
   <url>https://github.com/davegurnell/bulletin</url>
   <scm>
