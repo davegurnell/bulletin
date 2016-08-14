@@ -9,13 +9,9 @@ Copyright 2016 Dave Gurnell. Licensed [Apache 2][license].
 
 ## Getting Started
 
-Grab the code from Bintray by adding the following to your `build.sbt`:
+Grab the code by adding the following to your `build.sbt`:
 
 ~~~ scala
-scalaVersion := "2.11.7"
-
-resolvers += "Awesome Utilities" at "https://dl.bintray.com/davegurnell/maven"
-
 libraryDependencies += "com.davegurnell" %% "bulletin" % "<<VERSION>>"
 ~~~
 
