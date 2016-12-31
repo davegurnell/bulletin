@@ -48,7 +48,6 @@ val updated = person merge update
 No update function is required.
 
 Bulletin matches fields in `Update` to fields in `Person` by name and type.
-The only restriction is that the fields have to be defined in the same order.
 
 If a field in the update has the same type as a field in the original,
 it always overwrites the original.

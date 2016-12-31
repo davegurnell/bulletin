@@ -10,6 +10,9 @@ class MergeSpec extends FreeSpec with Matchers {
   case class CustomRequiredUpdate(id: Double)
   case class CustomOptionalUpdate(id: Option[Double])
 
+  case class OrderInsensitiveRequiredUpdate(name: String, id: Long, email: Option[String])
+
+
   "updates are applied correctly" in {
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
     val update   = OptionalUpdate(Some(321L), Some("Batman"), Some(Some("iam@thebatman.com")))
@@ -50,7 +53,7 @@ class MergeSpec extends FreeSpec with Matchers {
     actual should equal(expected)
   }
 
-  "fields are aligned by type" in {
+ "fields are aligned by type" in {
     case class InvalidUpdate(name: Option[String], email: Option[Option[String]])
 
     val person   = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
@@ -87,5 +90,14 @@ class MergeSpec extends FreeSpec with Matchers {
 
     actual1 should equal(expected)
     actual2 should equal(expected)
+  }
+
+  "merge is insensitive to field order" in {
+    val person = Person(123L, "Bruce Wayne", Some("bruce@waynemanor.com"))
+    val update = OrderInsensitiveRequiredUpdate(name = "Batman", id = 321L, email = None)
+
+    val actual = person merge update
+    actual should equal(Person(321L, "Batman", None))
+
   }
 }
