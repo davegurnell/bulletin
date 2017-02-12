@@ -6,16 +6,14 @@ Treat your data structures to the latest updates!
 Copyright 2016 Dave Gurnell. Licensed [Apache 2][license].
 
 [![Build Status](https://travis-ci.org/davegurnell/bulletin.svg?branch=develop)](https://travis-ci.org/davegurnell/bulletin)
+[![Coverage status](https://img.shields.io/codecov/c/github/davegurnell/bulletin/develop.svg)](https://codecov.io/github/davegurnell/bulletin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.davegurnell/bulletin_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.davegurnell/bulletin_2.11)
 
 ## Getting Started
 
-Grab the code from Bintray by adding the following to your `build.sbt`:
+Grab the code by adding the following to your `build.sbt`:
 
 ~~~ scala
-scalaVersion := "2.11.7"
-
-resolvers += "Awesome Utilities" at "https://dl.bintray.com/davegurnell/maven"
-
 libraryDependencies += "com.davegurnell" %% "bulletin" % "<<VERSION>>"
 ~~~
 
