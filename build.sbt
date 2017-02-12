@@ -1,7 +1,10 @@
-name         in ThisBuild := "bulletin"
-organization in ThisBuild := "com.davegurnell"
-version      in ThisBuild := "0.6.0"
-scalaVersion in ThisBuild := "2.11.8"
+name         := "bulletin"
+organization := "com.davegurnell"
+version      := "0.7.0"
+
+scalaOrganization  in ThisBuild := "org.typelevel"
+scalaVersion       in ThisBuild := "2.11.8"
+crossScalaVersions in ThisBuild := Seq("2.11.8", "2.12.1")
 
 licenses += ("Apache-2.0", url("http://apache.org/licenses/LICENSE-2.0"))
 
@@ -12,8 +15,8 @@ scalacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.chuusai"   %% "shapeless" % "2.2.5",
-  "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+  "com.chuusai"   %% "shapeless" % "2.3.2",
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
 
 pomExtra in Global := {
