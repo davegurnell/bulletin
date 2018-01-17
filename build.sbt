@@ -1,6 +1,6 @@
 name         := "bulletin"
 organization := "com.davegurnell"
-version      := "0.7.0"
+version      := "0.8.0"
 
 scalaOrganization  in ThisBuild := "org.typelevel"
 scalaVersion       in ThisBuild := "2.11.8"
@@ -18,6 +18,8 @@ libraryDependencies ++= Seq(
   "com.chuusai"   %% "shapeless" % "2.3.2",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
+
+publishTo := sonatypePublishTo.value
 
 pomExtra in Global := {
   <url>https://github.com/davegurnell/bulletin</url>
