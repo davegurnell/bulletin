@@ -1,7 +1,7 @@
 package bulletin
 
 import scala.annotation.implicitNotFound
-import shapeless._
+import shapeless._, ops.record.Remover
 import shapeless.labelled._
 
 @implicitNotFound("Cannot generate an AutoMerge instance for ${A} and ${B}. Check the field types match up, and manually create Merge instances for any non-standard pairs of types.")
@@ -21,35 +21,32 @@ trait AutoMergeFunctions {
     new AutoMerge[A, B] { def apply(a: A, b: B): A = func(a, b) }
 }
 
-trait AutoMergeInstances {
-  implicit def headAutoMerge[Name <: Symbol, HeadA, TailA <: HList, HeadB, TailB <: HList](
+trait LowPriorityAutoMergeInstances {
+  implicit def skipAutoMerge[HA, TA <: HList, ListB <: HList](implicit tailAutoMerge: AutoMerge[TA, ListB]) =
+    AutoMerge.instance[HA :: TA, ListB]{(a, b) =>
+      a.head :: tailAutoMerge(a.tail, b)
+    }
+}
+
+trait AutoMergeInstances extends LowPriorityAutoMergeInstances {
+  implicit def headAutoMerge[Name <: Symbol, HeadA, TailA <: HList, HeadB, TailB <: HList, ListB <: HList](
     implicit
     witness: Witness.Aux[Name],
+    select: Remover.Aux[ListB, Name, (HeadB, TailB)],
     headMerge: Merge[HeadA, HeadB],
     tailMerge: Lazy[AutoMerge[TailA, TailB]]
-  ): AutoMerge[FieldType[Name, HeadA] :: TailA, FieldType[Name, HeadB] :: TailB] =
-    AutoMerge.instance[FieldType[Name, HeadA] :: TailA, FieldType[Name, HeadB] :: TailB] { (a, b) =>
-      val head: FieldType[Name, HeadA] = field[Name](headMerge(a.head, b.head))
-      val tail: TailA = tailMerge.value(a.tail, b.tail)
-      head :: tail
-    }
-
-  /** Merge two non-empty HLists. */
-  implicit def skipAutoMerge[Name <: Symbol, HeadA, TailA <: HList, ListB <: HList](
-    implicit
-    witness: Witness.Aux[Name],
-    tailMerge: Lazy[AutoMerge[TailA, ListB]]
   ): AutoMerge[FieldType[Name, HeadA] :: TailA, ListB] =
     AutoMerge.instance[FieldType[Name, HeadA] :: TailA, ListB] { (a, b) =>
-      val head: FieldType[Name, HeadA] = a.head
-      val tail: TailA = tailMerge.value(a.tail, b)
+      val (bValue, bRemain) = select(b)
+      val head: FieldType[Name, HeadA] = field[Name](headMerge(a.head, bValue))
+      val tail: TailA = tailMerge.value(a.tail, bRemain)
       head :: tail
     }
 
-  /** Merge two empty HLists. */
-  implicit val nilAutoMerge: AutoMerge[HNil, HNil] =
-    AutoMerge.instance[HNil, HNil] { (a, b) =>
-      HNil
+  /** Merge an empty HList into a HList. */
+  implicit def nilAutoMerge[H <: HList]: AutoMerge[H, HNil] =
+    AutoMerge.instance[H, HNil] { (a, b) =>
+      a
     }
 
   /** Merge two generic ADTs. */
